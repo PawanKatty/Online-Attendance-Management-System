@@ -203,10 +203,139 @@ if(array_key_exists("addStudent",$_POST)){
 
 
 /*------------------Edit Attendance-------------------*/
+if(array_key_exists("editAttendance",$_GET)){
+    $checked = array();
+    $query = "SELECT `studentid` , `roll` FROM `student` WHERE 
+    class= '".mysqli_real_escape_string($link,$_GET['class'])."' AND section= '".mysqli_real_escape_string($link,$_GET['section'])."'";
+    $result = mysqli_query($link,$query);
+    $total_student = mysqli_num_rows($result);
+    while($row = mysqli_fetch_array($result)){
+        $roww = $row["studentid"];
+        $roll = $row["roll"];
+        echo $roww." = id<br>";
+        echo $roll." = roll<br>";
+        
+        $queryy = "SELECT `date` FROM `date` WHERE id= '".mysqli_real_escape_string($link,$roww)."'
+        AND date= '".mysqli_real_escape_string($link,$_GET['date'])."'";
+        $resultt = mysqli_query($link,$queryy);
+        while( $fetched_date = mysqli_fetch_array($resultt)){
+            $fetched_datee = $fetched_date["date"];
+            echo $fetched_datee." <br>" ;
+            if($fetched_datee == $_GET['date']){
+                echo "present";
+                $checked[] = $roll;
+            }
+        }
+        echo "<br><br>";
+        
+    }
+    $implodeChecked = implode(",",$checked);
+    header("Location: view/adminView.php?date=".$_GET['date']."&class=".$_GET['class']."&section=".$_GET['section']."&total=".$total_student."&checked=".$implodeChecked);
+    
+    echo "<p>class= ".$_GET['class']."</p>";
+    echo "<p>section= ".$_GET['section']."<br><br></p>";
+    print_r($checked);
+    echo $implodeChecked;
+}
 
+
+if(array_key_exists("updateAttendance",$_GET)){
+    //print_r($_GET['check']);
+    $explodeChecked = explode(",",$_GET['checked']);
+    //print_r($explodeChecked);
+    
+    $addDiff = array_diff($_GET['check'],$explodeChecked);
+    print_r($addDiff);
+    
+    $minusDiff = array_diff($explodeChecked,$_GET['check']);
+    print_r($minusDiff);
+    
+    echo "<br>to Add.<br>";
+    foreach($addDiff as $toAdd){
+        echo $toAdd;
+        $query = "SELECT `studentid` FROM `student` WHERE class= '".mysqli_real_escape_string($link,$_GET['class'])."' AND section= '".mysqli_real_escape_string($link,$_GET['section'])."' AND roll= '".mysqli_real_escape_string($link,$toAdd)."'";
+    $result = mysqli_query($link,$query);
+    //$row = mysqli_fetch_array($result);
+    while($row = mysqli_fetch_array($result)){
+        $roww = $row["studentid"];
+        echo "<br>".$roww." = id<br>";
+//        date_default_timezone_set('Asia/Kolkata');
+//        $datee = date('Y-m-d',time());
+//        echo $datee;
+        echo "<p>Roll= ".$toAdd."</p>";
+        echo "<p>class= ".$_GET['class']."</p>";
+        echo "<p>section= ".$_GET['section']."<br><br></p>";
+        
+        $query = "INSERT INTO `date`(`date`,`id`) VALUES ('".mysqli_real_escape_string($link,$_GET['date'])."','".mysqli_real_escape_string($link,$roww)."')";
+        $run = mysqli_query($link,$query);
+        if(!$run){
+            echo " Not added";
+        }else{
+            echo "Added";
+        }
+    }
+    }
+    
+    echo "<br>to delete.<br>";
+    foreach($minusDiff as $toDelete){
+        echo $toDelete;
+        $query = "SELECT `studentid` FROM `student` WHERE class= '".mysqli_real_escape_string($link,$_GET['class'])."' AND section= '".mysqli_real_escape_string($link,$_GET['section'])."' AND roll= '".mysqli_real_escape_string($link,$toDelete)."'";
+    $result = mysqli_query($link,$query);
+    //$row = mysqli_fetch_array($result);
+    while($row = mysqli_fetch_array($result)){
+        $roww = $row["studentid"];
+        echo "<br>".$roww." = id<br>";
+//        date_default_timezone_set('Asia/Kolkata');
+//        $datee = date('Y-m-d',time());
+//        echo $datee;
+        echo "<p>Roll= ".$toDelete."</p>";
+        echo "<p>class= ".$_GET['class']."</p>";
+        echo "<p>section= ".$_GET['section']."<br><br></p>";
+        
+        $query = "DELETE FROM `date` WHERE id='".mysqli_real_escape_string($link,$roww)."'
+        AND date='".mysqli_real_escape_string($link,$_GET['date'])."' LIMIT 1";
+        $run = mysqli_query($link,$query);
+        if(!$run){
+            echo " Not deleted";
+        }else{
+            echo "Deleted";
+        }
+    }
+    }
+}
 
 /*-------------Delete All-------------------*/
-//    codes are deleted and availble on original project.
+    if(array_key_exists("deleteAll",$_GET)){
+        $explodeChecked = explode(",",$_GET['checked']);
+        print_r($explodeChecked);
+        foreach($explodeChecked as $toDeleteAll){
+        echo $toDeleteAll;
+        $query = "SELECT `studentid` FROM `student` WHERE class= '".mysqli_real_escape_string($link,$_GET['class'])."' AND section= '".mysqli_real_escape_string($link,$_GET['section'])."' AND roll= '".mysqli_real_escape_string($link,$toDeleteAll)."'";
+    $result = mysqli_query($link,$query);
+    //$row = mysqli_fetch_array($result);
+    while($row = mysqli_fetch_array($result)){
+        $roww = $row["studentid"];
+        echo "<br>".$roww." = id<br>";
+//        date_default_timezone_set('Asia/Kolkata');
+//        $datee = date('Y-m-d',time());
+//        echo $datee;
+        echo "<p>Roll= ".$toDeleteAll."</p>";
+        echo "<p>class= ".$_GET['class']."</p>";
+        echo "<p>section= ".$_GET['section']."<br><br></p>";
+        
+        $query = "DELETE FROM `date` WHERE id='".mysqli_real_escape_string($link,$roww)."'
+        AND date='".mysqli_real_escape_string($link,$_GET['date'])."' LIMIT 1";
+        $run = mysqli_query($link,$query);
+        if(!$run){
+            echo " Not deleted";
+        }else{
+            echo "Deleted";
+        }
+    }
+    }
+        
+        
+    }
 
 
 

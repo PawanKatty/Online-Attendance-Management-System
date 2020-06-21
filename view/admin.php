@@ -50,7 +50,6 @@ include("header.php"); ?>
    
    
      <!--    Status of students-->
-<!--     And update attendance of which codes are not shared on git hub-->
       <div class="card border-success mb-3 mt-5 w-50"  style="min-width: 17rem;">
               <div class="card-header bg-transparent border-success"><h5>Select and click View to view attendance</h5></div>
               <div class="card-body text-success m-auto">
